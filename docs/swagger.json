@@ -1,0 +1,738 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Railroad API",
+    "version": "1.0.0",
+    "description": "API for managing users, trains, stations and tickets in the Railroad application"
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "summary": "Create a new user",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "email": "user@example.com",
+                "pseudo": "username",
+                "password": "userpassword",
+                "role": "user"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "summary": "Get user information",
+        "tags": ["Users"],
+        "security": [
+          {
+            "JWT": ["admin", "employee"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User information",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "65797f9c76b1e84bad00aeec",
+                  "email": "user@example.com",
+                  "pseudo": "username",
+                  "role": "user"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update user information",
+        "tags": ["Users"],
+        "security": [
+          {
+            "JWT": ["admin", "user"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "email": "new_email@example.com",
+                "pseudo": "new_username",
+                "password": "new_password",
+                "role": "user"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a user",
+        "tags": ["Users"],
+        "security": [
+          {
+            "JWT": ["admin"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User deleted successfully"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "User login",
+        "tags": ["Users"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "email": "user@example.com",
+                "password": "userpassword"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/stations": {
+      "get": {
+        "summary": "List stations",
+        "tags": ["Stations"],
+        "parameters": [
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Sort stations by a specific field",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of stations",
+            "content": {
+              "application/json": {
+                "example": {
+                  "stations" : [
+                    {
+                        "_id": "657981f682a52d6b39bc26c6",
+                        "name": "Gare de l'Est",
+                        "open_hour": "06:00",
+                        "close_hour": "23:00",
+                        "__v": 0
+                    },
+                    {
+                        "_id": "6579820982a52d6b39bc26c8",
+                        "name": "Gare du Nord",
+                        "open_hour": "05:00",
+                        "close_hour": "23:30",
+                        "__v": 0
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new station",
+        "tags": ["Stations"],
+        "security": [
+          {
+            "JWT": ["admin"]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Station name",
+                "open_hour": "8:00",
+                "close_hour": "20:00",
+                "image": "img/image.jpg"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Station created successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "name": "Station name",
+                    "open_hour": "8:00",
+                    "close_hour": "20:00",
+                    "image": "test-resized.jpg",
+                    "_id": "6579c6eb7d8cdf96f2084042",
+                    "__v": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/stations/{stationId}": {
+      "get": {
+        "summary": "Get station information",
+        "tags": ["Stations"],
+        "parameters": [
+          {
+            "name": "stationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Station information",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "6579c6eb7d8cdf96f2084042",
+                  "name": "Station name",
+                  "open_hour": "8:00",
+                  "close_hour": "20:00",
+                  "image": "\\img\\image-resized.jpg"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Station not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update station information",
+        "tags": ["Stations"],
+        "security": [
+          {
+            "JWT": ["admin"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "stationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                  "name": "New station name",
+                  "open_hour": "8:00",
+                  "close_hour": "20:00",
+                  "image": "img/newimage.jpg"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Station updated successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "__id": "6579c6eb7d8cdf96f2084042",
+                  "name": "New station name",
+                  "open_hour": "8:00",
+                  "close_hour": "20:00",
+                  "image": "newimage-resized.jpg",
+                  "__v": 0
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Station not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a station",
+        "tags": ["Stations"],
+        "security": [
+          {
+            "JWT": ["admin"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "stationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Station deleted successfully"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Station not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/trains": {
+      "get": {
+        "summary": "List trains",
+        "tags": ["Trains"],
+        "parameters": [
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "Sort stations by name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of trains",
+            "content": {
+              "application/json": {
+                "example": {
+                  "trains" : [
+                    {
+                      "_id": "65798a5e1c487ca270784d3f",
+                      "name": "Train 1",
+                      "start_station": "657981f682a52d6b39bc26c6",
+                      "end_station": "6579820982a52d6b39bc26c8",
+                      "time_of_departure": "2023-12-13T13:15:00.000Z",
+                      "__v": 0
+                    },
+                    {
+                      "_id": "65798b201c487ca270784d48",
+                      "name": "Train 2",
+                      "start_station": "657981f682a52d6b39bc26c6",
+                      "end_station": "6579820982a52d6b39bc26c8",
+                      "time_of_departure": "2023-12-13T13:15:00.000Z",
+                      "__v": 0
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new train",
+        "tags": ["Trains"],
+        "security": [
+          {
+            "JWT": ["admin"]
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Train test 3",
+                "start_station": "Gare de l'Est",
+                "end_station": "Gare du Nord",
+                "time_of_departure": "2023-12-17T13:15:00.000Z"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Train created successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "name": "Train test 3",
+                  "start_station": "657981f682a52d6b39bc26c6",
+                  "end_station": "6579820982a52d6b39bc26c8",
+                  "time_of_departure": "2023-12-17T13:15:00.000Z",
+                  "_id": "6579cc511174649ee3a58fff",
+                  "__v": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/trains/{trainId}": {
+      "get": {
+        "summary": "Get train information",
+        "tags": ["Trains"],
+        "parameters": [
+          {
+            "name": "trainId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Train information",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "6579cc511174649ee3a58fff",
+                  "name": "Train test 3",
+                  "start_station": {
+                      "_id": "657981f682a52d6b39bc26c6",
+                      "name": "Gare de l'Est",
+                      "open_hour": "06:00",
+                      "close_hour": "23:00",
+                      "__v": 0
+                  },
+                  "end_station": {
+                      "_id": "6579820982a52d6b39bc26c8",
+                      "name": "Gare du Nord",
+                      "open_hour": "05:00",
+                      "close_hour": "23:30",
+                      "__v": 0
+                  },
+                  "time_of_departure": "2023-12-17T13:15:00.000Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Train not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update train information",
+        "tags": ["Trains"],
+        "security": [
+          {
+            "JWT": ["admin"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "trainId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Train test 3",
+                "start_station": "New start station",
+                "end_station": "New end station",
+                "time_of_departure": "2023-12-17T13:15:00.000Z"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Train updated successfully"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Train not found || Start of end station not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a train",
+        "tags": ["Trains"],
+        "security": [
+          {
+            "JWT": ["admin"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "trainId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Train deleted successfully"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Train not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/tickets" : {
+      "post": {
+        "summary": "Book a ticket",
+        "tags": ["Tickets"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": {
+                "userEmail": "user@gmail.com",
+                "trainId": "65798a5e1c487ca270784d3f"
+              }              
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ticket booked successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "user": {
+                      "_id": "657989b81c487ca270784d37",
+                      "email": "antonin@gmail.com",
+                      "pseudo": "toninos380",
+                      "role": "user",
+                      "__v": 0
+                  },
+                  "train": {
+                      "_id": "65798a5e1c487ca270784d3f",
+                      "name": "Train test",
+                      "start_station": "657981f682a52d6b39bc26c6",
+                      "end_station": "6579820982a52d6b39bc26c8",
+                      "time_of_departure": "2023-12-13T13:15:00.000Z",
+                      "__v": 0
+                  },
+                  "is_valid": false,
+                  "_id": "657b6f7155cca48ca1b4eeb3",
+                  "__v": 0
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/tickets/{ticketId}/validate": {
+      "post": {
+        "summary": "Validate a ticket",
+        "tags": ["Tickets"],
+        "security": [
+          {
+            "JWT": ["admin", "employee"]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "ticketId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket validated successfully"
+          },
+          "400": {
+            "description": "Ticket already validated"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "JWT": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization"
+      }
+    }
+  }
+}
