@@ -1,5 +1,7 @@
+# Application CRUD de gestion de trains, stations, tickets et utilisateurs
 Auteurs : Lou-Anne Gautherie et Antonin Montagne
-# Prérequis:
+
+## Prérequis:
 
 Avoir une base de données MongoDB
 Changer les informations de connection de votre base de données dans la variable MONGODB_URI dans le fichier .env:
@@ -12,7 +14,7 @@ Pour utiliser des images avec les stations de train :
   - il faut mettre son image dans le répertoire img à la racine du projet.
   - préciser le lien de son image lors de la création de la station (img/nom_de_l_image)
 
-# Lancement:
+## Lancement:
 
 Se placer à la racine du projet
 Lancer "npm run start"
